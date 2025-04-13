@@ -9,10 +9,38 @@
     "discord-channel-deleter-bot": {
         "type": "directory",
         "children": {
-            "clear": { "type": "file", "path": "discord-channel-deleter-bot/clear" },
+            "clear": { 
+                "type": "directory", 
+                "children": {
+                    "clearstep1.png": { "type": "file", "path": "discord-channel-deleter-bot/clear/clearstep1.png" },
+                    "clearstep2.png": { "type": "file", "path": "discord-channel-deleter-bot/clear/clearstep2.png" },
+                    "clearstep3.png": { "type": "file", "path": "discord-channel-deleter-bot/clear/clearstep3.png" },
+                    "clearstep4.png": { "type": "file", "path": "discord-channel-deleter-bot/clear/clearstep4.png" }
+                }
+            },
+            "delete-channels": { 
+                "type": "directory", 
+                "children": {
+                    "channeldltstep2-2.png": { "type": "file", "path": "discord-channel-deleter-bot/delete-channels/channeldltstep2-2.png" },
+                    "channeldltstep2.png": { "type": "file", "path": "discord-channel-deleter-bot/delete-channels/channeldltstep2.png" },
+                    "channeldltstep3.png": { "type": "file", "path": "discord-channel-deleter-bot/delete-channels/channeldltstep3.png" },
+                    "channeldltstep4.png": { "type": "file", "path": "discord-channel-deleter-bot/delete-channels/channeldltstep4.png" },
+                    "channeldltstep5.png": { "type": "file", "path": "discord-channel-deleter-bot/delete-channels/channeldltstep5.png" },
+                    "channeldltstep6.png": { "type": "file", "path": "discord-channel-deleter-bot/delete-channels/channeldltstep6.png" }
+                }
+            },
+            "delete-roles": { 
+                "type": "directory", 
+                "children": {
+                    "Rolesdltstep1.png": { "type": "file", "path": "discord-channel-deleter-bot/delete-roles/Rolesdltstep1.png" },
+                    "Rolesdltstep2.png": { "type": "file", "path": "discord-channel-deleter-bot/delete-roles/Rolesdltstep2.png" },
+                    "Rolesdltstep3.png": { "type": "file", "path": "discord-channel-deleter-bot/delete-roles/Rolesdltstep3.png" },
+                    "Rolesdltstep4.png": { "type": "file", "path": "discord-channel-deleter-bot/delete-roles/Rolesdltstep4.png" },
+                    "Rolesdltstep5.png": { "type": "file", "path": "discord-channel-deleter-bot/delete-roles/Rolesdltstep5.png" },
+                    "Rolesdltstep6.png": { "type": "file", "path": "discord-channel-deleter-bot/delete-roles/Rolesdltstep6.png" }
+                }
+            },
             "cmd_testing.gif": { "type": "file", "path": "discord-channel-deleter-bot/cmd_testing.gif" },
-            "delete-channels": { "type": "file", "path": "discord-channel-deleter-bot/delete-channels" },
-            "delete-roles": { "type": "file", "path": "discord-channel-deleter-bot/delete-roles" },
             "index.html": { "type": "file", "path": "discord-channel-deleter-bot/index.html" },
             "logo.svg": { "type": "file", "path": "discord-channel-deleter-bot/logo.svg" }
         }
