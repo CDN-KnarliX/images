@@ -1,5 +1,4 @@
-// File system information (JSON format)
-const fileSystem = {
+{
     "KnarliX": {
         "type": "directory",
         "children": {
@@ -43,4 +42,4 @@ const fileSystem = {
     "LICENSE": { "type": "file", "path": "LICENSE" },
     "index.html": { "type": "file", "path": "index.html" },
     "replit.nix": { "type": "file", "path": "replit.nix" }
-};
+}
