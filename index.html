@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Explorer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .explorer {
+            margin-top: 20px;
+        }
+        .folder, .file {
+            padding: 8px 15px;
+            margin: 2px 0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+        .folder {
+            background-color: #e7f3ff;
+            cursor: pointer;
+        }
+        .file {
+            background-color: #f9f9f9;
+            justify-content: space-between;
+        }
+        .file-left {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .folder:hover, .file:hover {
+            background-color: #daeaff;
+        }
+        .folder-icon, .file-icon {
+            margin-right: 10px;
+            display: inline-block;
+            width: 20px;
+            text-align: center;
+        }
+        .folder-icon {
+            color: #4a6da7;
+        }
+        .file-icon {
+            color: #5d666f;
+        }
+        .copy-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .copy-btn:hover {
+            background-color: #45a049;
+        }
+        .folder-content {
+            padding-left: 20px;
+            display: none;
+            border-left: 1px dashed #ccc;
+            margin-left: 10px;
+        }
+        .breadcrumb {
+            display: flex;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .breadcrumb a {
+            color: #0366d6;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .breadcrumb .separator {
+            color: #666;
+        }
+        .back-button {
+            background-color: #0366d6;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .back-button:hover {
+            background-color: #0257ba;
+        }
+        .file-preview {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .file-preview pre {
+            margin: 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .image-preview {
+            max-width: 100%;
+            max-height: 500px;
+            display: block;
+            margin: 0 auto;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>File Explorer</h1>
+        <div id="breadcrumb" class="breadcrumb">
+            <a href="#" data-path="">Home</a>
+        </div>
+        <button id="back-button" class="back-button" style="display: none;">Back</button>
+        
+        <div id="explorer" class="explorer"></div>
+        
+        <div id="file-preview" class="file-preview">
+            <h3 id="file-name"></h3>
+            <div id="preview-content"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">Link copied to clipboard!</div>
+
+    <script>
+        // File system information (JSON format)
+        const fileSystem = {
+            "KnarliX": {
+                "type": "directory",
+                "children": {
+                    "index.html": { "type": "file", "path": "KnarliX/index.html" },
+                    "pfp.png": { "type": "file", "path": "KnarliX/pfp.png" }
+                }
+            },
+            "discord-channel-deleter-bot": {
+                "type": "directory",
+                "children": {
+                    "clear": { "type": "file", "path": "discord-channel-deleter-bot/clear" },
+                    "cmd_testing.gif": { "type": "file", "path": "discord-channel-deleter-bot/cmd_testing.gif" },
+                    "delete-channels": { "type": "file", "path": "discord-channel-deleter-bot/delete-channels" },
+                    "delete-roles": { "type": "file", "path": "discord-channel-deleter-bot/delete-roles" },
+                    "index.html": { "type": "file", "path": "discord-channel-deleter-bot/index.html" },
+                    "logo.svg": { "type": "file", "path": "discord-channel-deleter-bot/logo.svg" }
+                }
+            },
+            "janvi": {
+                "type": "directory",
+                "children": {
+                    "index.html": { "type": "file", "path": "janvi/index.html" },
+                    "logo.png": { "type": "file", "path": "janvi/logo.png" }
+                }
+            },
+            "jarvi": {
+                "type": "directory",
+                "children": {
+                    "jarvi-logo.png": { "type": "file", "path": "jarvi/jarvi-logo.png" },
+                    "jarvi-logo.svg": { "type": "file", "path": "jarvi/jarvi-logo.svg" }
+                }
+            },
+            "logos": {
+                "type": "directory",
+                "children": {
+                    "heroku-logo.svg": { "type": "file", "path": "logos/heroku-logo.svg" },
+                    "railway-logo.svg": { "type": "file", "path": "logos/railway-logo.svg" },
+                    "replit-logo.svg": { "type": "file", "path": "logos/replit-logo.svg" }
+                }
+            },
+            "LICENSE": { "type": "file", "path": "LICENSE" },
+            "index.html": { "type": "file", "path": "index.html" },
+            "replit.nix": { "type": "file", "path": "replit.nix" }
+        };
+
+        let currentPath = [];
+        const explorer = document.getElementById('explorer');
+        const filePreview = document.getElementById('file-preview');
+        const fileNameElement = document.getElementById('file-name');
+        const previewContent = document.getElementById('preview-content');
+        const breadcrumb = document.getElementById('breadcrumb');
+        const backButton = document.getElementById('back-button');
+        const toast = document.getElementById('toast');
+
+        // Function to show toast notification
+        function showToast() {
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Function to copy CDN link to clipboard
+        function copyToClipboard(path) {
+            // Create CDN style link
+            const cdnLink = `CDN-KnarliX.github.io/images/${path}`;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(cdnLink)
+                .then(() => {
+                    showToast();
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    // Fallback copy method for browsers that don't support clipboard API
+                    const textArea = document.createElement('textarea');
+                    textArea.value = cdnLink;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    
+                    try {
+                        document.execCommand('copy');
+                        showToast();
+                    } catch (err) {
+                        console.error('Fallback: Failed to copy', err);
+                        alert('Failed to copy link. Please try again or copy manually.');
+                    }
+                    
+                    document.body.removeChild(textArea);
+                });
+        }
+
+        // Function to display all files and folders
+        function renderExplorer() {
+            explorer.innerHTML = '';
+            
+            // Get the correct part of the file system object based on current path
+            let currentDir = fileSystem;
+            for (const segment of currentPath) {
+                if (currentDir[segment] && currentDir[segment].type === 'directory') {
+                    currentDir = currentDir[segment].children;
+                }
+            }
+            
+            // Sort folders and files separately
+            const sortedItems = Object.keys(currentDir).sort((a, b) => {
+                const aIsDir = currentDir[a].type === 'directory';
+                const bIsDir = currentDir[b].type === 'directory';
+                
+                if (aIsDir && !bIsDir) return -1;
+                if (!aIsDir && bIsDir) return 1;
+                return a.localeCompare(b);
+            });
+            
+            // Create elements for the sorted list of folders and files
+            sortedItems.forEach(name => {
+                const item = currentDir[name];
+                const itemElement = document.createElement('div');
+                
+                if (item.type === 'directory') {
+                    itemElement.className = 'folder';
+                    itemElement.innerHTML = `
+                        <span class="folder-icon">📁</span>
+                        <span>${name}</span>
+                    `;
+                    
+                    itemElement.addEventListener('click', () => {
+                        currentPath.push(name);
+                        updateBreadcrumb();
+                        renderExplorer();
+                        if (currentPath.length > 0) {
+                            backButton.style.display = 'block';
+                        }
+                    });
+                } else {
+                    itemElement.className = 'file';
+                    
+                    // Determine icon based on file extension
+                    let icon = '📄';
+                    if (name.endsWith('.jpg') || name.endsWith('.png') || name.endsWith('.gif') || name.endsWith('.svg')) {
+                        icon = '🖼️';
+                    } else if (name.endsWith('.html') || name.endsWith('.htm')) {
+                        icon = '🌐';
+                    } else if (name.endsWith('.js')) {
+                        icon = '📜';
+                    } else if (name.endsWith('.css')) {
+                        icon = '🎨';
+                    }
+                    
+                    itemElement.innerHTML = `
+                        <div class="file-left">
+                            <span class="file-icon">${icon}</span>
+                            <span>${name}</span>
+                        </div>
+                        <button class="copy-btn" data-path="${item.path}">Copy Link</button>
+                    `;
+                    
+                    // Add click event for file name
+                    itemElement.querySelector('.file-left').addEventListener('click', () => {
+                        let filePath = item.path;
+                        openFile(filePath, name);
+                    });
+                    
+                    // Add click event for copy button
+                    itemElement.querySelector('.copy-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        copyToClipboard(item.path);
+                    });
+                }
+                
+                explorer.appendChild(itemElement);
+            });
+        }
+
+        // Function to open file
+        function openFile(filePath, fileName) {
+            fileNameElement.textContent = fileName;
+            previewContent.innerHTML = '';
+            
+            // Show preview based on file extension
+            if (fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.gif')) {
+                const img = document.createElement('img');
+                img.src = filePath;
+                img.className = 'image-preview';
+                previewContent.appendChild(img);
+            } else if (fileName.endsWith('.svg')) {
+                const object = document.createElement('object');
+                object.data = filePath;
+                object.type = 'image/svg+xml';
+                object.className = 'image-preview';
+                previewContent.appendChild(object);
+            } else {
+                // Fetch and show preview for text files
+                fetch(filePath)
+                    .then(response => response.text())
+                    .then(text => {
+                        const pre = document.createElement('pre');
+                        pre.textContent = text;
+                        previewContent.appendChild(pre);
+                    })
+                    .catch(error => {
+                        previewContent.textContent = `Error loading file: ${error.message}`;
+                    });
+            }
+            
+            filePreview.style.display = 'block';
+        }
+
+        // Update breadcrumb
+        function updateBreadcrumb() {
+            breadcrumb.innerHTML = '<a href="#" data-path="">Home</a>';
+            
+            let pathSoFar = '';
+            currentPath.forEach((segment, index) => {
+                pathSoFar += (index > 0 ? '/' : '') + segment;
+                breadcrumb.innerHTML += `<span class="separator"> > </span>
+                    <a href="#" data-path="${pathSoFar}">${segment}</a>`;
+            });
+            
+            // Add click events to breadcrumb links
+            document.querySelectorAll('#breadcrumb a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pathData = link.getAttribute('data-path');
+                    
+                    if (pathData === '') {
+                        currentPath = [];
+                    } else {
+                        currentPath = pathData.split('/');
+                    }
+                    
+                    updateBreadcrumb();
+                    renderExplorer();
+                    
+                    if (currentPath.length > 0) {
+                        backButton.style.display = 'block';
+                    } else {
+                        backButton.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // Event listener for back button
+        backButton.addEventListener('click', () => {
+            if (currentPath.length > 0) {
+                currentPath.pop();
+                updateBreadcrumb();
+                renderExplorer();
+                
+                if (currentPath.length === 0) {
+                    backButton.style.display = 'none';
+                }
+            }
+        });
+
+        // Render explorer initially
+        renderExplorer();
+    </script>
+</body>
+</html>
