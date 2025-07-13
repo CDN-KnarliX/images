@@ -1,0 +1,9 @@
+services:
+  - type: static
+    name: my-html-website
+    env: static
+    plan: free
+    branch: main
+    buildCommand: ""  # No build step needed for plain HTML
+    staticPublishPath: public  # Folder containing your index.html
+    repo: https://github.com/CDN-KnarliX/images
